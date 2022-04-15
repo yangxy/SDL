@@ -27,7 +27,7 @@ _<sup>2</sup>[Department of Computing, The Hong Kong Polytechnic University](htt
 <img src="figs/style_transfer.png" width="784px"/>
 
 ## News
-(2022-4-11) Add source codes and pre-trained models.
+(2022-4-15) Add source codes and pre-trained models. Other pre-trained models will be released soon.
 
 ## Usage
 
@@ -48,26 +48,39 @@ cd SDL
 pip install -r requirements.txt
 ````
 
-- Download our [pre-trained models](https://public-vigen-video.oss-cn-shanghai.aliyuncs.com/robin/models/SDL_models.zip?OSSAccessKeyId=LTAI4G6bfnyW4TA4wFUXTYBe&Expires=1961116085&Signature=GlUNW6%2B8FxvxWmE9jKIZYOOciKQ%3D) and unzip them into ``weights/``.
+- Download our pre-trained models and put them into ``weights/``. **Note:** SDL_vfi_psnr is obtained by finetuned SDL_vfi_perceptual using only Charbonnier Loss. It performs better in terms of PSNR but fails to recover fine details.
+
+	[SDL_vfi_perceptual](https://public-vigen-video.oss-cn-shanghai.aliyuncs.com/robin/models/SDL/SDL_vfi_perceptual.pth?OSSAccessKeyId=LTAI4G6bfnyW4TA4wFUXTYBe&Expires=1965370312&Signature=7TkRqQfck3qhBT5Dgwls1t7uFlE%3D) | [SDL_vfi_psnr](https://public-vigen-video.oss-cn-shanghai.aliyuncs.com/robin/models/SDL/SDL_vfi_psnr.pth?OSSAccessKeyId=LTAI4G6bfnyW4TA4wFUXTYBe&Expires=1965370339&Signature=AuHiCMo7y84nkK0t6S8KdWWDsfs%3D) | [SDL_dog2dog_scale](https://public-vigen-video.oss-cn-shanghai.aliyuncs.com/robin/models/SDL/SDL_dog2dog_scale.pth?OSSAccessKeyId=LTAI4G6bfnyW4TA4wFUXTYBe&Expires=1965370373&Signature=1zpBpGBgzcnJZwTlIJircy2%2B2c4%3D) | [SDL_cat2cat_scale](https://public-vigen-video.oss-cn-shanghai.aliyuncs.com/robin/models/SDL/SDL_cat2cat_scale.pth?OSSAccessKeyId=LTAI4G6bfnyW4TA4wFUXTYBe&Expires=1965370401&Signature=oVYA8uFcUP9F95aZwfl2igkhtqo%3D) | SDL_aging_scale | SDL_toonification_scale | SDL_style_transfer_arbitrary | SDL_super_resolution
 
 - Test our models.
 ```bash
-python sdl_test.py --task vfi --model SDL_vfi_perceptual.pth --num 1 --source examples/VFI/frame_0.png --target examples/VFI/frame_1.png
+# Testing
+python sdl_test.py --task vfi --model SDL_vfi_perceptual.pth --num 1 --source examples/VFI/car-turn/00000.jpg --target examples/VFI/car-turn/00001.jpg --outdir results/VFI
 
-python sdl_test.py --task morphing --model SDL_dog2dog_scale.pth --num 7 --size 512 --source examples/Morphing/dog_0.png --target examples/Morphing/dog_1.png
+python sdl_test.py --task vfi-dir --model SDL_vfi_perceptual.pth --num 1 --indir examples/VFI/car-turn --outdir results/VFI
 
-python sdl_test.py --task i2i --model SDL_aging_scale.pth --num 7 --size 512 --extend_t --source examples/I2I/face_0.png
+python sdl_test.py --task morphing --model SDL_dog2dog_scale.pth --num 7 --size 512 --source examples/Morphing/dog/source/flickr_dog_000045.jpg --target examples/Morphing/dog/target/pixabay_dog_000017.jpg --outdir results/Morphing/dog
 
-python sdl_test.py --task style_transfer --model SDL_style_transfer_arbitrary.pth --num 7 --source examples/Style_transfer/content.png --target examples/Style_transfer/style.png
+python sdl_test.py --task morphing --model SDL_cat2cat_scale.pth --num 7 --size 512 --source examples/Morphing/cat/source/flickr_cat_000008.jpg --target examples/Morphing/cat/target/pixabay_cat_000010.jpg --outdir results/Morphing/cat
+
+python sdl_test.py --task i2i --model SDL_aging_scale.pth --num 7 --size 512 --extend_t --source examples/I2I/ffhq-10/00002.png --outdir results/I2I/aging
+
+python sdl_test.py --task i2i --model SDL_toonification_scale.pth --num 7 --size 512 --source examples/I2I/ffhq-10/00002.png --outdir results/I2I/toonification
+
+python sdl_test.py --task style_transfer --model SDL_style_transfer_arbitrary.pth --num 7 --source examples/Style_transfer/content/sailboat.jpg --target examples/Style_transfer/style/sketch.png --outdir results/Style_transfer
 ```
 
 - Train SDL with 4 GPUs.
 ```bash
+# Supervised training
 CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 --master_port=4321 train.py -opt options/train_SDL_VFI.yml --auto_resume --launcher pytorch #--debug
 
 CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 --master_port=4321 train.py -opt options/train_SDLGAN_I2I.yml --auto_resume --launcher pytorch #--debug
 
 CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 --master_port=4321 train.py -opt options/train_SDLGAN_Morphing.yml --auto_resume --launcher pytorch #--debug
+
+# Unsupervised training
+CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node=4 --master_port=4321 train.py -opt options/train_SDL_StyleTransfer.yml --auto_resume --launcher pytorch #--debug
 ```
 
 - Prepare the training dataset by following this [instruction](datasets/README.md).
