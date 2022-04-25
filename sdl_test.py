@@ -74,8 +74,9 @@ class SDLWrap(object):
                 img_gt = img2tensor(img_gt, bgr2rgb=True, float32=True).unsqueeze(0).cuda()
                 img_gt = tensor2img(img_gt)
 
-                t = torch.FloatTensor([idx/(l-1)]).unsqueeze(0).cuda()
-                img_t = self.net(img_01, t)
+                with torch.no_grad():
+                    t = torch.FloatTensor([idx/(l-1)]).unsqueeze(0).cuda()
+                    img_t = self.net(img_01, t)
                 img_t = tensor2img(img_t)
                 img_t = img_t[:h, :w]
                 if save_img:
@@ -104,21 +105,22 @@ class SDLWrap(object):
         img_01 = torch.cat((img_0, img_1), 0).unsqueeze(0).cuda()
     
         for j in range(1, num+1):
-            t = torch.FloatTensor([j/(num+1)]).unsqueeze(0).cuda()
-            img_t = self.net(img_01, t)
+            with torch.no_grad():
+                t = torch.FloatTensor([j/(num+1)]).unsqueeze(0).cuda()
+                img_t = self.net(img_01, t)
             img_t = tensor2img(img_t)
             imwrite(img_t[:h, :w], os.path.join(save_path, f'{j:02d}_sdl.png'))
 
-    def test_vfi_dir(self, in_path, save_path, num=1, copy_flag=True):
+    def test_vfi_dir(self, in_path, save_path, num=1, copy_flag=True, ext='.png'):
         os.makedirs(save_path, exist_ok=True)
-        files = sorted(glob.glob(os.path.join(in_path, '*.jpg')))
+        files = sorted(glob.glob(os.path.join(in_path, '*' + ext)))
         num_frame = len(files)
 
         cur = 0 
         for idx in range(num_frame-1):
             if idx%10==0: print(files[idx])
             if copy_flag:
-                shutil.copyfile(files[idx], f'{save_path}/{cur:03d}.jpg')
+                shutil.copyfile(files[idx], f'{save_path}/{cur:03d}{ext}')
                 cur += 1
 
             img_bytes = self.file_client.get(files[idx], 'frame0')
@@ -137,14 +139,15 @@ class SDLWrap(object):
             start = 1 if copy_flag else 0
             end = num if (idx != num_frame-2 or copy_flag) else num+1
             for i in range(start, end+1):
-                t = torch.FloatTensor([i/(num+1)]).unsqueeze(0).cuda()
-                img_t = self.net(img_01, t)
+                with torch.no_grad():
+                    t = torch.FloatTensor([i/(num+1)]).unsqueeze(0).cuda()
+                    img_t = self.net(img_01, t)
                 img_t = tensor2img(img_t)
-                imwrite(img_t[:h, :w] , f'{save_path}/{cur:03d}.jpg')
+                imwrite(img_t[:h, :w] , f'{save_path}/{cur:03d}{ext}')
                 cur += 1
 
         if copy_flag:
-            shutil.copyfile(files[-1], f'{save_path}/{cur:03d}.jpg')
+            shutil.copyfile(files[-1], f'{save_path}/{cur:03d}{ext}')
 
     def test_morphing(self, source, target, save_path, size=512, num=7):
         img_bytes = self.file_client.get(source, 'frame0')
@@ -162,8 +165,9 @@ class SDLWrap(object):
         img_01 = torch.cat((img_0, img_1), 0).unsqueeze(0).cuda()
     
         for j in range(1, num+1):
-            t = torch.FloatTensor([j/(num+1)]).unsqueeze(0).cuda()
-            img_t = self.net(img_01, t)
+            with torch.no_grad():
+                t = torch.FloatTensor([j/(num+1)]).unsqueeze(0).cuda()
+                img_t = self.net(img_01, t)
             img_t = tensor2img(img_t)
             imwrite(img_t, os.path.join(save_path, f'{j:02d}_sdl.png'))
 
@@ -171,7 +175,7 @@ class SDLWrap(object):
         img_bytes = self.file_client.get(files[i], 'frame0')
         img_0 = imfrombytes(img_bytes, float32=True)
 
-        size = max(32, min(1024, size)) # size: {32, 64, ..., 512, 1024}
+        size = max(32, min(512, size)) # size: {32, 64, ..., 512}
         size = size//32*32
 
         img_0 = cv2.resize(img_0, (size, size))
@@ -181,8 +185,9 @@ class SDLWrap(object):
         
         start = -num if extend_t else 0
         for j in range(start, num+1):
-            t = torch.FloatTensor([j/(num+1)]).unsqueeze(0).cuda()
-            img_t = self.net(img_0, t)
+            with torch.no_grad():
+                t = torch.FloatTensor([j/(num+1)]).unsqueeze(0).cuda()
+                img_t = self.net(img_0, t)
             img_t = tensor2img(img_t)
             imwrite(img_t, os.path.join(save_path, f'{j-start:02d}_sdl.png'))
 
@@ -202,8 +207,9 @@ class SDLWrap(object):
         img_01 = torch.cat((img_0, img_1), 0).unsqueeze(0).cuda()
     
         for j in range(1, num+1):
-            t = torch.FloatTensor([j/(num+1)]).unsqueeze(0).cuda()
-            img_t = self.net(img_01, t)
+            with torch.no_grad():
+                t = torch.FloatTensor([j/(num+1)]).unsqueeze(0).cuda()
+                img_t = self.net(img_01, t)
             img_t = tensor2img(img_t)
             imwrite(img_t, os.path.join(save_path, f'{j:02d}_sdl.png'))
 
