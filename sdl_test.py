@@ -34,7 +34,7 @@ class SDLWrap(object):
         self.load_model(in_ch, key)
 
     def load_model(self, in_ch, key=None):
-        self.net = SDLNet(in_ch, 3, self.split)
+        self.net = SDLNet(in_ch, 3, self.split, nrow=3, ncol=2)
         load_net = torch.load(self.model_path, map_location=lambda storage, loc: storage)
         if key is not None: load_net = load_net[key]
         # remove unnecessary 'module.'
@@ -172,7 +172,7 @@ class SDLWrap(object):
             imwrite(img_t, os.path.join(save_path, f'{j:02d}_sdl.png'))
 
     def test_i2i(self, source, save_path, size=512, num=7, extend_t=False):
-        img_bytes = self.file_client.get(files[i], 'frame0')
+        img_bytes = self.file_client.get(source, 'frame0')
         img_0 = imfrombytes(img_bytes, float32=True)
 
         size = max(32, min(512, size)) # size: {32, 64, ..., 512}

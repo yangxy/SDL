@@ -93,7 +93,7 @@ If our work is useful for your research, please consider citing:
     @inproceedings{Yang2022SDL,
 	    title={Beyond a Video Frame Interpolator: A Space Decoupled Learning Approach to Continuous Image Transition},
 	    author={Tao Yang, Peiran Ren, Xuansong Xie, Xiansheng Hua and Lei Zhang},
-	    journal={arXiv:2203.09771},
+	    journal={European Conference on Computer Vision Workshop (ECCVW) },
 	    year={2022}
     }
     
