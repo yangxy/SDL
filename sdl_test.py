@@ -34,7 +34,7 @@ class SDLWrap(object):
         self.load_model(in_ch, key)
 
     def load_model(self, in_ch, key=None):
-        self.net = SDLNet(in_ch, 3, self.split, nrow=3, ncol=2)
+        self.net = SDLNet(in_ch, 3, self.split, nrow=3, ncol=6)
         load_net = torch.load(self.model_path, map_location=lambda storage, loc: storage)
         if key is not None: load_net = load_net[key]
         # remove unnecessary 'module.'
