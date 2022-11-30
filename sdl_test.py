@@ -261,7 +261,7 @@ if __name__=="__main__":
         #model_path = 'weights/SDL_toonification_scale.pth'
 
         # models that only support outputs with a resolution of 512x512
-        if '1024' in args.model: 
+        if '512' in args.model: 
             args.size = 512
             args.extend_t = False
 
