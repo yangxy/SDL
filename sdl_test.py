@@ -260,9 +260,9 @@ if __name__=="__main__":
         #model_path = 'weights/SDL_aging_scale.pth'
         #model_path = 'weights/SDL_toonification_scale.pth'
 
-        # models that only support outputs with a resolution of 1024x1024
+        # models that only support outputs with a resolution of 512x512
         if '1024' in args.model: 
-            args.size = 1024
+            args.size = 512
             args.extend_t = False
 
         model.test_i2i(args.source, args.outdir, args.size, args.num, args.extend_t)
