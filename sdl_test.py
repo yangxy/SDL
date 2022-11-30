@@ -254,6 +254,10 @@ if __name__=="__main__":
     elif args.task=='morphing':
         #model_path = 'weights/SDL_cat2cat_scale.pth'
         #model_path = 'weights/SDL_dog2dog_scale.pth'
+
+        # models that only support outputs with a resolution of 512x512
+        if '512' in args.model: 
+            args.size = 512
         
         model.test_morphing(args.source, args.target, args.outdir, args.size, args.num)
     elif args.task=='i2i':
