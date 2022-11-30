@@ -27,7 +27,9 @@ _<sup>2</sup>[Department of Computing, The Hong Kong Polytechnic University](htt
 <img src="figs/style_transfer.png" width="784px"/>
 
 ## News
-(2022-4-15) Add source codes and pre-trained models. Other pre-trained models will be released soon.
+(2022-11-30) Add more pre-trained models.
+
+(2022-04-15) Add source codes and pre-trained models. Other pre-trained models will be released soon.
 
 ## Usage
 
