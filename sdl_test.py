@@ -260,6 +260,9 @@ if __name__=="__main__":
         #model_path = 'weights/SDL_aging_scale.pth'
         #model_path = 'weights/SDL_toonification_scale.pth'
 
+        # models that only support outputs with a resolution of 1024x1024
+        if '1024' in args.model: args.size = 1024
+
         model.test_i2i(args.source, args.outdir, args.size, args.num, args.extend_t)
     elif args.task=='style_transfer':
         #model_path = 'weights/SDL_style_transfer_arbitrary.pth'
